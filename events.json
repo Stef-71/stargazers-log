@@ -1,0 +1,26 @@
+[
+  {
+    "repository": "sindresorhus/ky",
+    "description": "Tiny and elegant HTTP client based on the Fetch API.",
+    "url": "https://github.com/sindresorhus/ky",
+    "starredAt": "2026-10-28"
+  },
+  {
+    "repository": "sharkdp/bat",
+    "description": "A cat clone with syntax highlighting and Git integration.",
+    "url": "https://github.com/sharkdp/bat",
+    "starredAt": "2026-10-19"
+  },
+  {
+    "repository": "pallets/click",
+    "description": "Composable command-line interface toolkit for Python.",
+    "url": "https://github.com/pallets/click",
+    "starredAt": "2026-10-07"
+  },
+  {
+    "repository": "neovim/neovim",
+    "description": "Hyperextensible Vim-based text editor.",
+    "url": "https://github.com/neovim/neovim",
+    "starredAt": "2026-09-22"
+  }
+]
