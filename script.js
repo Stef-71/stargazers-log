@@ -2,12 +2,39 @@ const repositoryList = document.querySelector("#repository-list");
 const statusMessage = document.querySelector("#status");
 
 function formatDate(dateString) {
+  const date = new Date(`${dateString}T00:00:00Z`);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== dateString) {
+    return null;
+  }
+
   return new Intl.DateTimeFormat("en", {
     year: "numeric",
     month: "short",
     day: "numeric",
     timeZone: "UTC"
-  }).format(new Date(`${dateString}T00:00:00Z`));
+  }).format(date);
+}
+
+function isValidRepository(repository) {
+  if (
+    !repository ||
+    typeof repository.repository !== "string" ||
+    typeof repository.url !== "string" ||
+    typeof repository.starredAt !== "string"
+  ) {
+    return false;
+  }
+
+  try {
+    const url = new URL(repository.url);
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  return formatDate(repository.starredAt) !== null;
 }
 
 function renderRepositories(repositories) {
@@ -26,7 +53,9 @@ function renderRepositories(repositories) {
 
     const description = document.createElement("p");
     description.className = "repository-description";
-    description.textContent = repository.description;
+    description.textContent = typeof repository.description === "string"
+      ? repository.description
+      : "";
 
     const date = document.createElement("time");
     date.className = "repository-date";
@@ -43,6 +72,11 @@ function renderRepositories(repositories) {
 }
 
 async function loadRepositories() {
+  if (!repositoryList || !statusMessage) {
+    console.error("Unable to load starred repositories: required page elements are missing.");
+    return;
+  }
+
   try {
     const response = await fetch("events.json");
     if (!response.ok) {
@@ -50,8 +84,13 @@ async function loadRepositories() {
     }
 
     const repositories = await response.json();
+    if (!Array.isArray(repositories) || !repositories.every(isValidRepository)) {
+      throw new TypeError("Repository data has an unexpected format.");
+    }
+
     renderRepositories(repositories);
   } catch (error) {
+    repositoryList.replaceChildren();
     statusMessage.textContent = "Could not load repositories. Please try again later.";
     console.error("Unable to load starred repositories:", error);
   }
